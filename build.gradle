@@ -1,0 +1,111 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.0'
+	id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'com.lox.authservice'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+// Grouped Dependencies
+
+// Core Spring Boot Dependencies
+def coreDependencies = [
+		'org.springframework.boot:spring-boot-starter-actuator',
+		'org.springframework.boot:spring-boot-starter-data-jpa',
+		'org.springframework.boot:spring-boot-starter-web',
+		'org.springframework.boot:spring-boot-starter-data-redis'
+]
+
+// Spring Cloud Dependencies
+def springCloudDependencies = [
+		'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client',
+		'org.springframework.cloud:spring-cloud-starter-config'
+]
+
+// Database Dependencies
+def databaseDependencies = [
+		'org.postgresql:postgresql',
+		'org.flywaydb:flyway-core',
+		'org.flywaydb:flyway-database-postgresql'
+]
+
+// Redis Dependencies
+def redisDependencies = [
+		'redis.clients:jedis'
+]
+
+// Messaging Dependencies
+def messagingDependencies = [
+		'org.springframework.kafka:spring-kafka'
+]
+
+// Observability Dependencies
+def observabilityDependencies = [
+		'io.micrometer:micrometer-registry-prometheus',
+		'io.micrometer:micrometer-observation',
+		'io.micrometer:micrometer-tracing-bridge-otel',
+		'io.opentelemetry:opentelemetry-exporter-zipkin',
+		'com.github.loki4j:loki-logback-appender:1.5.2'
+]
+
+// Development Dependencies
+def developmentDependencies = [
+		'org.projectlombok:lombok'
+]
+
+// Testing Dependencies
+def testDependencies = [
+		'org.springframework.boot:spring-boot-starter-test'
+]
+
+dependencies {
+	// Core Spring Boot Dependencies
+	coreDependencies.each { implementation it }
+
+	// Spring Cloud Dependencies
+	springCloudDependencies.each { implementation it }
+
+	// Database Dependencies
+	databaseDependencies.each {
+		runtimeOnly it
+	}
+
+	// Redis Dependencies
+	redisDependencies.each { implementation it }
+
+	// Messaging Dependencies
+	messagingDependencies.each { implementation it }
+
+	// Observability Dependencies
+	observabilityDependencies.each { implementation it }
+
+	// Development Dependencies
+	developmentDependencies.each {
+		compileOnly it
+		annotationProcessor it
+	}
+
+	// Testing Dependencies
+	testDependencies.each { testImplementation it }
+}
+
+dependencyManagement {
+	imports {
+		mavenBom 'org.springframework.cloud:spring-cloud-dependencies:2024.0.0'
+	}
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
