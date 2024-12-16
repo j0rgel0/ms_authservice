@@ -1,6 +1,4 @@
-// src/main/java/com/lox/authservice/security/LoggingFilter.java
-
-package com.lox.authservice.security;
+package com.lox.authservice.filters;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -20,6 +18,7 @@ public class LoggingFilter implements WebFilter {
         log.info("Incoming request: {} {}", exchange.getRequest().getMethod(),
                 exchange.getRequest().getURI());
         return chain.filter(exchange)
-                .doOnSuccess(aVoid -> log.info("Response: {}", exchange.getResponse().getStatusCode()));
+                .doOnSuccess(
+                        aVoid -> log.info("Response: {}", exchange.getResponse().getStatusCode()));
     }
 }

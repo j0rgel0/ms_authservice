@@ -1,5 +1,3 @@
-// src/main/java/com/lox/authservice/security/JWTAuthenticationManager.java
-
 package com.lox.authservice.security;
 
 import com.lox.authservice.util.JWTUtil;

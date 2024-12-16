@@ -1,5 +1,3 @@
-// src/main/java/com/lox/authservice/kafka/config/KafkaTopicConfig.java
-
 package com.lox.authservice.kafka.config;
 
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +16,6 @@ public class KafkaTopicConfig {
         return new NewTopic(topicName, 1, (short) 1);
     }
 
-    // Puedes definir más tópicos si es necesario
     @Bean
     public NewTopic userEventsTopic() {
         String topicName = "user-events";

@@ -1,5 +1,3 @@
-// src/main/java/com/lox/authservice/exceptions/GlobalExceptionHandler.java
-
 package com.lox.authservice.exceptions;
 
 import lombok.extern.slf4j.Slf4j;

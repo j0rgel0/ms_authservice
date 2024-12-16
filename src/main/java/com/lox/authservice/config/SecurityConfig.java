@@ -2,7 +2,6 @@
 
 package com.lox.authservice.config;
 
-import com.lox.authservice.security.LoggingFilter;
 import com.lox.authservice.security.SecurityContextRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +23,6 @@ public class SecurityConfig {
 
     private final ReactiveAuthenticationManager authenticationManager;
     private final SecurityContextRepository securityContextRepository;
-    private final LoggingFilter loggingFilter;
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http) {
@@ -45,8 +43,10 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.POST, "/lox-auth-service/actuator/refresh")
                         .permitAll()
-                        .pathMatchers(HttpMethod.POST, "/actuator/refresh", "/actuator/refresh/").permitAll()
-                        .pathMatchers("/favicon.ico").permitAll() // Permitir acceso a favicon para evitar logs de error
+                        .pathMatchers(HttpMethod.POST, "/actuator/refresh", "/actuator/refresh/")
+                        .permitAll()
+                        .pathMatchers("/favicon.ico")
+                        .permitAll()
                         .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/register").permitAll()
@@ -58,6 +58,5 @@ public class SecurityConfig {
                 )
                 .build();
     }
-
 
 }

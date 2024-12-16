@@ -1,19 +1,21 @@
-// src/main/java/com/lox/authservice/services/AuthService.java
-
 package com.lox.authservice.services;
 
 import com.lox.authservice.exceptions.EmailAlreadyExistsException;
 import com.lox.authservice.exceptions.UsernameAlreadyExistsException;
+import com.lox.authservice.kafka.EventType;
 import com.lox.authservice.kafka.Producer;
 import com.lox.authservice.models.AuthToken;
 import com.lox.authservice.models.Credential;
 import com.lox.authservice.models.User;
 import com.lox.authservice.models.events.AuthEvent;
+import com.lox.authservice.models.events.AuthEventBuilder;
+import com.lox.authservice.models.events.Event;
 import com.lox.authservice.repositories.AuthTokenRepository;
 import com.lox.authservice.repositories.CredentialRepository;
 import com.lox.authservice.repositories.UserRepository;
 import com.lox.authservice.util.JWTUtil;
 import java.time.Instant;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,50 +42,44 @@ public class AuthService {
 
         return userRepository.findByUsername(user.getUsername())
                 .flatMap(existingUser -> {
-                    log.warn("Registration failed: Username {} already exists", user.getUsername());
-                    return Mono.error(new UsernameAlreadyExistsException("Username already exists"));
-                })
+                    return Mono.<User>error(
+                            new UsernameAlreadyExistsException("Username already exists"));
+                }) // Check if the username already exists.
                 .switchIfEmpty(
                         userRepository.findByEmail(user.getEmail())
                                 .flatMap(existingUser -> {
-                                    log.warn("Registration failed: Email {} already exists", user.getEmail());
-                                    return Mono.error(new EmailAlreadyExistsException("Email already exists"));
-                                })
+                                    return Mono.<User>error(new EmailAlreadyExistsException(
+                                            "Email already exists"));
+                                }) // Check if the email already exists.
                 )
-                .switchIfEmpty(
-                        Mono.defer(() -> {
-                            user.setCreatedAt(Instant.now());
-                            log.info("Saving new user: {}", user.getUsername());
-                            return userRepository.save(user);
-                        })
-                )
+                .switchIfEmpty(Mono.defer(() -> {
+                    user.setCreatedAt(Instant.now()); // Set creation time.
+                    log.info("Saving new user: {}", user.getUsername());
+                    return userRepository.save(user).log("save-user"); // Save the new user.
+                }))
                 .flatMap(savedUser -> {
-                    if (!(savedUser instanceof User userObj)) {
-                        return Mono.error(new RuntimeException("Saved user is not an instance of User"));
-                    }
-
                     Credential credential = Credential.builder()
-                            .userId(userObj.getId())
-                            .password(passwordEncoder.encode(rawPassword))
-                            .build();
-                    log.info("Saving credentials for user: {}", userObj.getUsername());
-                    return credentialRepository.save(credential)
-                            .thenReturn(userObj);
-                })
-                .publishOn(Schedulers.boundedElastic())
-                .doOnSuccess(savedUser -> {
-                    log.info("User registered successfully: {}", savedUser.getUsername());
-                    AuthEvent event = AuthEvent.builder()
-                            .eventType("USER_CREATED")
                             .userId(savedUser.getId())
-                            .username(savedUser.getUsername())
-                            .email(savedUser.getEmail())
-                            .fullName(savedUser.getFullName())
-                            .timestamp(Instant.now())
+                            .password(
+                                    passwordEncoder.encode(rawPassword)) // Encode the raw password.
                             .build();
-                    producer.publishAuthEvent(event);
+                    log.info("Saving credentials for user: {}", savedUser.getUsername());
+                    return credentialRepository.save(credential)
+                            .thenReturn(savedUser); // Save credentials and return the user.
                 })
-                .doOnError(error -> log.error("Error during user registration: {}", error.getMessage()));
+                .publishOn(
+                        Schedulers.boundedElastic()) // Switch to a bounded elastic scheduler for heavy tasks.
+                .flatMap(savedUser -> {
+                    log.info("User registered successfully: {}", savedUser.getUsername());
+                    AuthEvent event = AuthEventBuilder.userCreated(
+                            savedUser); // Build a "user created" event.
+                    CompletableFuture<Void> eventFuture = sendEvent(EventType.USER_CREATED,
+                            event).toFuture();
+                    return Mono.fromFuture(eventFuture)
+                            .thenReturn(savedUser); // Send event and return the user.
+                })
+                .doOnError(error -> log.error("Error during user registration: {}",
+                        error.getMessage())); // Log registration errors.
     }
 
     public Mono<String> authenticate(String email, String rawPassword, String ipAddress,
@@ -92,13 +88,16 @@ public class AuthService {
 
         return userRepository.findByEmail(email)
                 .flatMap(user -> credentialRepository.findByUserId(user.getId())
-                        .switchIfEmpty(Mono.error(new RuntimeException("Invalid email or password")))
+                        .switchIfEmpty(Mono.error(new RuntimeException(
+                                "Invalid email or password"))) // Handle invalid credentials.
                         .flatMap(credential -> {
                             if (passwordEncoder.matches(rawPassword, credential.getPassword())) {
                                 String role = "ROLE_USER";
-                                String token = jwtUtil.generateToken(String.valueOf(user.getId()), role);
+                                String token = jwtUtil.generateToken(String.valueOf(user.getId()),
+                                        role); // Generate JWT.
                                 Instant now = Instant.now();
-                                Instant expiry = now.plusMillis(jwtUtil.getJwtExpirationMs());
+                                Instant expiry = now.plusMillis(
+                                        jwtUtil.getJwtExpirationMs()); // Calculate token expiry time.
 
                                 AuthToken authToken = AuthToken.builder()
                                         .token(token)
@@ -109,59 +108,42 @@ public class AuthService {
 
                                 log.info("Authentication successful for user: {}", email);
                                 return authTokenRepository.save(authToken)
-                                        .thenReturn(token);
+                                        .thenReturn(
+                                                user); // Save the auth token and return the user.
                             } else {
-                                log.warn("Authentication failed: Invalid password for user {}", email);
-                                return Mono.error(new RuntimeException("Invalid email or password"));
+                                log.warn("Authentication failed: Invalid password for user {}",
+                                        email);
+                                return Mono.error(new RuntimeException(
+                                        "Invalid email or password")); // Invalid password.
                             }
                         }))
-                .publishOn(Schedulers.boundedElastic())
-                .doOnSuccess(token -> {
-                    // En este punto, el usuario ya ha sido autenticado y el token ha sido generado
-                    // Para incluir el userId en el evento, necesitamos acceder al usuario
-                    // Sin embargo, en este contexto solo tenemos acceso al token
-                    // Por lo tanto, es mejor emitir el evento dentro del flatMap anterior
-                    // Alternativamente, se puede utilizar un mecanismo de contexto o refactorizar el método
-                    log.info("Authentication process completed for user: {}", email);
+                .flatMap(user -> {
+                    AuthEvent event = AuthEventBuilder.userAuthenticated(user, ipAddress, userAgent,
+                            referer); // Build an authentication event.
+                    CompletableFuture<Void> eventFuture = sendEvent(EventType.USER_AUTHENTICATED,
+                            event).toFuture();
+                    return Mono.fromFuture(eventFuture)
+                            .then(Mono.just(jwtUtil.generateToken(String.valueOf(user.getId()),
+                                    "ROLE_USER"))); // Return the JWT.
                 })
+                .doOnSuccess(
+                        token -> log.info("Authentication process completed for user: {}", email))
+                .publishOn(
+                        Schedulers.boundedElastic()) // Switch to a bounded elastic scheduler for heavy tasks.
                 .doOnError(error -> {
                     log.error("Authentication error for user {}: {}", email, error.getMessage());
-                    AuthEvent event = AuthEvent.builder()
-                            .eventType("LOGIN_FAILED")
-                            .userId(null) // Puede ser null si el usuario no existe
-                            .username(email)
-                            .email(null)
-                            .fullName(null)
-                            .timestamp(Instant.now())
-                            .ipAddress(ipAddress)
-                            .userAgent(userAgent)
-                            .referer(referer)
-                            .failureReason(error.getMessage())
-                            .build();
-                    producer.publishAuthEvent(event);
-                })
-                .flatMap(token -> {
-                    // Necesitamos obtener el userId para el evento de autenticación exitosa
-                    // Una forma de hacerlo es buscar nuevamente al usuario por email
-                    // Sin embargo, esto introduce una consulta adicional
-                    // En lugar de eso, vamos a modificar el flujo para capturar el userId
-                    // Refactorizaremos el método para emitir el evento dentro del flujo
-                    return userRepository.findByEmail(email)
-                            .flatMap(user -> {
-                                AuthEvent event = AuthEvent.builder()
-                                        .eventType("USER_AUTHENTICATED")
-                                        .userId(user.getId())
-                                        .username(user.getUsername())
-                                        .email(user.getEmail())
-                                        .fullName(user.getFullName())
-                                        .timestamp(Instant.now())
-                                        .ipAddress(ipAddress)
-                                        .userAgent(userAgent)
-                                        .referer(referer)
-                                        .build();
-                                producer.publishAuthEvent(event);
-                                return Mono.just(token);
-                            });
+                    AuthEvent event = AuthEventBuilder.loginFailed(email, ipAddress, userAgent,
+                            referer, error.getMessage()); // Build a login failure event.
+                    sendEvent(EventType.LOGIN_FAILED, event).subscribe(); // Send failure event.
                 });
+    }
+
+    private <T extends Event> Mono<Void> sendEvent(EventType eventType, T event) {
+        log.info("Sending event of type {}: {}", eventType, event); // Log event sending.
+        return Mono.fromFuture(producer.publishEvent(eventType, event))
+                .doOnSuccess(
+                        aVoid -> log.info("Event {} sent successfully", eventType)) // Log success.
+                .doOnError(error -> log.error("Error sending event {}: {}", eventType,
+                        error.getMessage())); // Log errors.
     }
 }

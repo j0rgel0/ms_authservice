@@ -1,49 +1,56 @@
-// src/main/java/com/lox/authservice/kafka/Producer.java
-
 package com.lox.authservice.kafka;
 
-import com.lox.authservice.models.events.AuthEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lox.authservice.models.events.Event;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
-import reactor.kafka.sender.KafkaSender;
-import reactor.kafka.sender.SenderRecord;
-import reactor.kafka.sender.SenderResult;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class Producer {
 
-    private final KafkaSender<String, AuthEvent> kafkaSender;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
-    private static final String TOPIC = "auth-events";
+    /**
+     * Publishes an event to the topic specified by the EventType asynchronously.
+     *
+     * @param eventType The event type that determines the topic.
+     * @param event     The event to publish.
+     * @param <T>       The type of event implementing the Event interface.
+     * @return CompletableFuture<Void> Indicates the completion of the send operation.
+     */
+    public <T extends Event> CompletableFuture<Void> publishEvent(EventType eventType, T event) {
+        try {
+            String eventJson = objectMapper.writeValueAsString(event);
 
-    public Mono<Void> publishAuthEvent(AuthEvent event) {
-        // Crear un ProducerRecord
-        ProducerRecord<String, AuthEvent> producerRecord = new ProducerRecord<>(TOPIC,
-                event.getUsername(), event);
+            // Send message using KafkaTemplate and handle success/failure
+            CompletableFuture<SendResult<String, String>> future = kafkaTemplate.send(
+                    eventType.getTopic(), eventJson);
 
-        // Crear un SenderRecord con ProducerRecord y metadatos de correlación de tipo String
-        SenderRecord<String, AuthEvent, String> senderRecord = SenderRecord.create(producerRecord,
-                event.getEventType());
-
-        // Enviar el SenderRecord a Kafka
-        return kafkaSender.send(Mono.just(senderRecord))
-                .doOnNext(this::handleResult)
-                .then();
-    }
-
-    private void handleResult(SenderResult<String> result) {
-        if (result.exception() != null) {
-            log.error("Error sending message to Kafka: ", result.exception());
-        } else {
-            log.debug("Message sent successfully to partition {}, offset {}",
-                    result.recordMetadata().partition(),
-                    result.recordMetadata().offset());
-            log.debug("Correlation Metadata (event type): {}", result.correlationMetadata());
+            // Handle result using `whenComplete`
+            return future.whenComplete((result, throwable) -> {
+                if (throwable != null) {
+                    // Handle failure
+                    log.error("Failed to publish event to {}: {}", eventType.getTopic(),
+                            throwable.getMessage());
+                } else {
+                    // Handle success
+                    log.info("Successfully published event to {}: {} with offset [{}]",
+                            eventType.getTopic(), eventJson, result.getRecordMetadata().offset());
+                }
+            }).thenApply(result -> null); // Return CompletableFuture<Void>
+        } catch (JsonProcessingException e) {
+            log.error("Failed to serialize event: {}", e.getMessage());
+            CompletableFuture<Void> failedFuture = new CompletableFuture<>();
+            failedFuture.completeExceptionally(e);
+            return failedFuture;
         }
     }
 }

@@ -1,5 +1,3 @@
-// src/main/java/com/lox/authservice/models/User.java
-
 package com.lox.authservice.models;
 
 import lombok.AllArgsConstructor;
@@ -27,5 +25,4 @@ public class User {
     private String fullName;
     private Instant createdAt;
 
-    // Otros campos y métodos según sea necesario
 }

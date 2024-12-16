@@ -1,5 +1,3 @@
-// src/main/java/com/lox/authservice/security/SecurityContextRepository.java
-
 package com.lox.authservice.security;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +19,6 @@ public class SecurityContextRepository implements ServerSecurityContextRepositor
 
     @Override
     public Mono<Void> save(ServerWebExchange swe, SecurityContext sc) {
-        // No implementado porque no almacenamos el contexto de seguridad
         return Mono.empty();
     }
 

@@ -1,7 +1,4 @@
-// src/main/java/com/lox/authservice/controllers/AuthController.java
-
 package com.lox.authservice.controllers;
-
 
 import com.lox.authservice.models.User;
 import com.lox.authservice.models.requests.LoginRequest;

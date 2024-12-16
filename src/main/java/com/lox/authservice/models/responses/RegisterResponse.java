@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class RegisterResponse {
-    private UUID id; // Cambiado de Long a UUID
+
+    private UUID id;
     private String username;
     private String email;
     private String fullName;

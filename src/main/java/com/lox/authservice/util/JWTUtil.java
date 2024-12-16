@@ -1,17 +1,15 @@
-// src/main/java/com/lox/authservice/util/JWTUtil.java
-
 package com.lox.authservice.util;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import jakarta.annotation.PostConstruct;
+import java.util.List;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
-
-import jakarta.annotation.PostConstruct;
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -20,6 +18,7 @@ public class JWTUtil {
     @Value("${jwt.secret}")
     private String secret;
 
+    @Getter
     @Value("${jwt.expirationMs}")
     private long jwtExpirationMs;
 
@@ -49,7 +48,7 @@ public class JWTUtil {
             JWT.require(algorithm).build().verify(token);
             return true;
         } catch (Exception e) {
-            // Token inválido
+            // Invalid token
             return false;
         }
     }
@@ -60,7 +59,4 @@ public class JWTUtil {
         return List.of(new SimpleGrantedAuthority(roles));
     }
 
-    public long getJwtExpirationMs() {
-        return jwtExpirationMs;
-    }
 }
