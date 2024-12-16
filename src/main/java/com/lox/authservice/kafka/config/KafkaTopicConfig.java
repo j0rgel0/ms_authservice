@@ -1,3 +1,5 @@
+// src/main/java/com/lox/authservice/kafka/config/KafkaTopicConfig.java
+
 package com.lox.authservice.kafka.config;
 
 import lombok.extern.slf4j.Slf4j;
@@ -11,17 +13,16 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic authEventsTopic() {
-        log.info("Creating topic: auth-events");
-        NewTopic topic = new NewTopic("auth-events", 1, (short) 1);
-        log.info("Topic created: {}", topic.name());
-        return topic;
+        String topicName = "auth-events";
+        log.info("Creating topic: {}", topicName);
+        return new NewTopic(topicName, 1, (short) 1);
     }
 
+    // Puedes definir más tópicos si es necesario
     @Bean
-    public NewTopic anotherTopic() {
-        log.info("Creating topic: another-topic");
-        NewTopic topic = new NewTopic("another-topic", 2, (short) 1);
-        log.info("Topic created: {}", topic.name());
-        return topic;
+    public NewTopic userEventsTopic() {
+        String topicName = "user-events";
+        log.info("Creating topic: {}", topicName);
+        return new NewTopic(topicName, 1, (short) 1);
     }
 }

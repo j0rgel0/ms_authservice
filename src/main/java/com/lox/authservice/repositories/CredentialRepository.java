@@ -1,8 +1,13 @@
+// src/main/java/com/lox/authservice/repositories/CredentialRepository.java
+
 package com.lox.authservice.repositories;
 
 import com.lox.authservice.models.Credential;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 
-public interface CredentialRepository extends JpaRepository<Credential, String> {
+import java.util.UUID;
 
+public interface CredentialRepository extends ReactiveCrudRepository<Credential, UUID> {
+    Mono<Credential> findByUserId(UUID userId);
 }

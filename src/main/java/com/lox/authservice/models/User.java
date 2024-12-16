@@ -1,4 +1,4 @@
-// src/main/java/com/lox/authservice/models/Credential.java
+// src/main/java/com/lox/authservice/models/User.java
 
 package com.lox.authservice.models;
 
@@ -8,24 +8,24 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.data.relational.core.mapping.Column;
 
+import java.time.Instant;
 import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table("credentials")
-public class Credential {
+@Table("users")
+public class User {
 
     @Id
     private UUID id;
 
-    @Column("user_id")
-    private UUID userId;
-
-    private String password;
+    private String username;
+    private String email;
+    private String fullName;
+    private Instant createdAt;
 
     // Otros campos y métodos según sea necesario
 }

@@ -1,58 +1,62 @@
+// src/main/java/com/lox/authservice/controllers/AuthController.java
+
 package com.lox.authservice.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.lox.authservice.models.Authtoken;
-import com.lox.authservice.models.Credential;
-import com.lox.authservice.models.responses.LoxAuthentication;
-import com.lox.authservice.services.AuthService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
+import com.lox.authservice.models.User;
+import com.lox.authservice.models.requests.LoginRequest;
+import com.lox.authservice.models.requests.RegisterRequest;
+import com.lox.authservice.services.AuthService;
+import jakarta.validation.Valid;
+import java.time.Instant;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
+
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<Credential> signup(@RequestParam String username,
-            @RequestParam String password) {
-        try {
-            Credential credential = authService.signup(username, password);
-            return (ResponseEntity<Credential>) ResponseEntity.internalServerError();
-        } catch (JsonProcessingException e) {
-            log.error("Error during signup", e);
-            return ResponseEntity.internalServerError().build();
-        }
+    @PostMapping("/register")
+    public Mono<ResponseEntity<User>> registerUser(
+            @Valid @RequestBody RegisterRequest registerRequest) {
+        User user = User.builder()
+                .username(registerRequest.getUsername())
+                .email(registerRequest.getEmail())
+                .fullName(registerRequest.getFullName())
+                .createdAt(Instant.now())
+                .build();
+
+        String password = registerRequest.getPassword();
+
+        return authService.registerUser(user, password)
+                .map(ResponseEntity::ok)
+                .onErrorResume(Mono::error);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<LoxAuthentication> login(@RequestParam String username,
-            @RequestParam String password) {
-        try {
-            return authService.generateToken(username, password)
-                    .map(ResponseEntity::ok)
-                    .orElse(ResponseEntity.status(401).body(new LoxAuthentication()));
-        } catch (JsonProcessingException e) {
-            log.error("Error during login", e);
-            return ResponseEntity.internalServerError().build();
-        }
+    public Mono<ResponseEntity<String>> login(@Valid @RequestBody LoginRequest loginRequest,
+            ServerHttpRequest request) {
+        String ipAddress =
+                request.getRemoteAddress() != null ? request.getRemoteAddress().getAddress()
+                        .getHostAddress() : "UNKNOWN";
+        String userAgent = request.getHeaders().getFirst(HttpHeaders.USER_AGENT);
+        String referer = request.getHeaders().getFirst(HttpHeaders.REFERER);
+
+        return authService.authenticate(loginRequest.getEmail(), loginRequest.getPassword(),
+                        ipAddress, userAgent, referer)
+                .map(token -> ResponseEntity.ok(token))
+                .onErrorResume(
+                        e -> Mono.just(ResponseEntity.status(401).body("Invalid credentials")));
     }
 
-    @GetMapping("/validate")
-    public ResponseEntity<Authtoken> validate(@RequestHeader("Sectoken") String token) {
-        return authService.validateToken(token)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.status(401).body(null));
-    }
 }
-

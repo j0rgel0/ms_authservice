@@ -18,13 +18,19 @@ repositories {
 }
 
 // Grouped Dependencies
-
 // Core Spring Boot Dependencies
 def coreDependencies = [
 		'org.springframework.boot:spring-boot-starter-actuator',
-		'org.springframework.boot:spring-boot-starter-data-jpa',
-		'org.springframework.boot:spring-boot-starter-web',
-		'org.springframework.boot:spring-boot-starter-data-redis'
+		'org.springframework.boot:spring-boot-starter-webflux',
+		'org.springframework.boot:spring-boot-starter-data-r2dbc',
+		'org.springframework.boot:spring-boot-starter-data-redis-reactive',
+		'org.springframework.boot:spring-boot-starter-security',
+		'org.springframework.boot:spring-boot-starter-validation'
+]
+
+// JWT Dependencies
+def jwtDependencies = [
+		'com.auth0:java-jwt:3.18.2'
 ]
 
 // Spring Cloud Dependencies
@@ -35,7 +41,6 @@ def springCloudDependencies = [
 
 // Database Dependencies
 def databaseDependencies = [
-		'org.postgresql:postgresql',
 		'org.flywaydb:flyway-core',
 		'org.flywaydb:flyway-database-postgresql'
 ]
@@ -47,7 +52,8 @@ def redisDependencies = [
 
 // Messaging Dependencies
 def messagingDependencies = [
-		'org.springframework.kafka:spring-kafka'
+		'org.springframework.kafka:spring-kafka',
+		'io.projectreactor.kafka:reactor-kafka'
 ]
 
 // Observability Dependencies
@@ -80,6 +86,8 @@ dependencies {
 	databaseDependencies.each {
 		runtimeOnly it
 	}
+	implementation 'org.postgresql:postgresql'
+	implementation 'org.postgresql:r2dbc-postgresql'
 
 	// Redis Dependencies
 	redisDependencies.each { implementation it }
@@ -96,8 +104,16 @@ dependencies {
 		annotationProcessor it
 	}
 
+	// JWT Dependencies
+	jwtDependencies.each { implementation it }
+
 	// Testing Dependencies
 	testDependencies.each { testImplementation it }
+
+
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
 }
 
 dependencyManagement {
@@ -109,3 +125,29 @@ dependencyManagement {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+task listFilesInAuthService {
+	doLast {
+		def basePackage = "com/lox/authservice" // Ruta del paquete que quieres listar
+		def sourceDirs = [
+				file("${projectDir}/src/main/java/${basePackage}"),
+				file("${projectDir}/src/main/resources/${basePackage}")
+		]
+
+		sourceDirs.each { dir ->
+			if (dir.exists()) {
+				println "Listado de archivos en: ${dir}"
+				dir.eachFileRecurse { file ->
+					if (file.isFile()) {
+						def relativePath = file.path.replace(projectDir.path + File.separator, '')
+						println relativePath
+					}
+				}
+			} else {
+				println "El directorio ${dir} no existe."
+			}
+		}
+	}
+}
+
+
