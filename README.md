@@ -100,6 +100,9 @@ AuthService is a reactive Java-based authentication and user management service 
 - **Response**:
     - `200 OK` with a JWT token.
     - `401 Unauthorized` for invalid credentials.
+ 
+## Flow:
+![Auth Server Flows](https://github.com/user-attachments/assets/29e5ed90-68a3-4ee1-8615-99447e564c83)
 
 ## Project Structure
 
