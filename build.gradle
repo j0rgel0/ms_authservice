@@ -18,102 +18,54 @@ repositories {
 }
 
 // Grouped Dependencies
-// Core Spring Boot Dependencies
-def coreDependencies = [
-		'org.springframework.boot:spring-boot-starter-actuator',
-		'org.springframework.boot:spring-boot-starter-webflux',
-		'org.springframework.boot:spring-boot-starter-data-r2dbc',
-		'org.springframework.boot:spring-boot-starter-data-redis-reactive',
-		'org.springframework.boot:spring-boot-starter-security',
-		'org.springframework.boot:spring-boot-starter-validation'
-]
-
-// JWT Dependencies
-def jwtDependencies = [
-		'com.auth0:java-jwt:3.18.2'
-]
-
-// Spring Cloud Dependencies
-def springCloudDependencies = [
-		'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client',
-		'org.springframework.cloud:spring-cloud-starter-config'
-]
-
-// Database Dependencies
-def databaseDependencies = [
-		'org.flywaydb:flyway-core',
-		'org.flywaydb:flyway-database-postgresql'
-]
-
-// Redis Dependencies
-def redisDependencies = [
-		'redis.clients:jedis'
-]
-
-// Messaging Dependencies
-def messagingDependencies = [
-		'org.springframework.kafka:spring-kafka',
-		'io.projectreactor.kafka:reactor-kafka'
-]
-
-// Observability Dependencies
-def observabilityDependencies = [
-		'io.micrometer:micrometer-registry-prometheus',
-		'io.micrometer:micrometer-observation',
-		'io.micrometer:micrometer-tracing-bridge-otel',
-		'io.opentelemetry:opentelemetry-exporter-zipkin',
-		'com.github.loki4j:loki-logback-appender:1.5.2'
-]
-
-// Development Dependencies
-def developmentDependencies = [
-		'org.projectlombok:lombok'
-]
-
-// Testing Dependencies
-def testDependencies = [
-		'org.springframework.boot:spring-boot-starter-test'
-]
 
 dependencies {
 	// Core Spring Boot Dependencies
-	coreDependencies.each { implementation it }
-
-	// Spring Cloud Dependencies
-	springCloudDependencies.each { implementation it }
-
-	// Database Dependencies
-	databaseDependencies.each {
-		runtimeOnly it
-	}
-	implementation 'org.postgresql:postgresql'
-	implementation 'org.postgresql:r2dbc-postgresql'
-
-	// Redis Dependencies
-	redisDependencies.each { implementation it }
-
-	// Messaging Dependencies
-	messagingDependencies.each { implementation it }
-
-	// Observability Dependencies
-	observabilityDependencies.each { implementation it }
-
-	// Development Dependencies
-	developmentDependencies.each {
-		compileOnly it
-		annotationProcessor it
-	}
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	// JWT Dependencies
-	jwtDependencies.each { implementation it }
+	implementation 'com.auth0:java-jwt:3.18.2'
 
-	// Testing Dependencies
-	testDependencies.each { testImplementation it }
+	// Spring Cloud Dependencies
+	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+	implementation 'org.springframework.cloud:spring-cloud-starter-config'
 
+	// Database Dependencies
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	implementation 'org.postgresql:postgresql'
+	implementation 'org.postgresql:r2dbc-postgresql'
+	runtimeOnly 'org.postgresql:postgresql'
 
+	// Redis Dependencies
+	implementation 'redis.clients:jedis'
+
+	// Messaging Dependencies
+	implementation 'org.springframework.kafka:spring-kafka'
+	implementation 'io.projectreactor.kafka:reactor-kafka'
+
+	// Observability Dependencies
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.micrometer:micrometer-observation'
+	implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+	implementation 'io.opentelemetry:opentelemetry-exporter-zipkin'
+	implementation 'com.github.loki4j:loki-logback-appender:1.5.2'
+
+	// Development Dependencies
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	// MapStruct Dependencies
 	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
+	// Testing Dependencies
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 dependencyManagement {
@@ -128,7 +80,7 @@ tasks.named('test') {
 
 task listFilesInAuthService {
 	doLast {
-		def basePackage = "com/lox/authservice" // Ruta del paquete que quieres listar
+		def basePackage = "com/lox/authservice" // Path of the package you want to list
 		def sourceDirs = [
 				file("${projectDir}/src/main/java/${basePackage}"),
 				file("${projectDir}/src/main/resources/${basePackage}")
@@ -136,7 +88,7 @@ task listFilesInAuthService {
 
 		sourceDirs.each { dir ->
 			if (dir.exists()) {
-				println "Listado de archivos en: ${dir}"
+				println "Listing files in: ${dir}"
 				dir.eachFileRecurse { file ->
 					if (file.isFile()) {
 						def relativePath = file.path.replace(projectDir.path + File.separator, '')
@@ -144,10 +96,8 @@ task listFilesInAuthService {
 					}
 				}
 			} else {
-				println "El directorio ${dir} no existe."
+				println "The directory ${dir} does not exist."
 			}
 		}
 	}
 }
-
-
