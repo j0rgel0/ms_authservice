@@ -1,9 +1,12 @@
 package com.lox.authservice.kafka;
 
+import lombok.Getter;
+
+@Getter
 public enum EventType {
-    USER_CREATED("user-events"),
-    USER_AUTHENTICATED("auth-events"),
-    LOGIN_FAILED("auth-events");
+    USER_CREATED(KafkaTopics.USER_EVENTS_TOPIC),
+    USER_AUTHENTICATED(KafkaTopics.AUTH_EVENTS_TOPIC),
+    LOGIN_FAILED(KafkaTopics.AUTH_EVENTS_TOPIC);
 
     private final String topic;
 
@@ -11,7 +14,4 @@ public enum EventType {
         this.topic = topic;
     }
 
-    public String getTopic() {
-        return topic;
-    }
 }
