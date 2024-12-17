@@ -140,10 +140,8 @@ public class AuthService {
 
     private <T extends Event> Mono<Void> sendEvent(EventType eventType, T event) {
         log.info("Sending event of type {}: {}", eventType, event); // Log event sending.
-        return Mono.fromFuture(producer.publishEvent(eventType, event))
-                .doOnSuccess(
-                        aVoid -> log.info("Event {} sent successfully", eventType)) // Log success.
-                .doOnError(error -> log.error("Error sending event {}: {}", eventType,
-                        error.getMessage())); // Log errors.
+        return producer.publishEvent(eventType, event)
+                .doOnSuccess(aVoid -> log.info("Event {} sent successfully", eventType)) // Log success.
+                .doOnError(error -> log.error("Error sending event {}: {}", eventType, error.getMessage())); // Log errors.
     }
 }

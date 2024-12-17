@@ -28,16 +28,18 @@ public class KafkaAdminConfig {
     @Bean
     public NewTopic authEventsTopic() {
         return TopicBuilder.name(KafkaTopics.AUTH_EVENTS_TOPIC)
-                .partitions(3)
+                .partitions(1)
                 .replicas(1)
+                .config("cleanup.policy", "delete")
                 .build();
     }
 
     @Bean
     public NewTopic userEventsTopic() {
         return TopicBuilder.name(KafkaTopics.USER_EVENTS_TOPIC)
-                .partitions(3)
+                .partitions(1)
                 .replicas(1)
+                .config("cleanup.policy", "delete")
                 .build();
     }
 }
