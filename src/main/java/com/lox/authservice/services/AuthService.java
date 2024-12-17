@@ -2,8 +2,8 @@ package com.lox.authservice.services;
 
 import com.lox.authservice.exceptions.EmailAlreadyExistsException;
 import com.lox.authservice.exceptions.UsernameAlreadyExistsException;
+import com.lox.authservice.kafka.EventProducer;
 import com.lox.authservice.kafka.EventType;
-import com.lox.authservice.kafka.Producer;
 import com.lox.authservice.models.AuthToken;
 import com.lox.authservice.models.Credential;
 import com.lox.authservice.models.User;
@@ -33,7 +33,7 @@ public class AuthService {
     private final CredentialRepository credentialRepository;
     private final AuthTokenRepository authTokenRepository;
     private final JWTUtil jwtUtil;
-    private final Producer producer;
+    private final EventProducer producer;
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
