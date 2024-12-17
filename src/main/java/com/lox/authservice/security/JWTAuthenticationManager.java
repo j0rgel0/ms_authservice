@@ -1,6 +1,6 @@
 package com.lox.authservice.security;
 
-import com.lox.authservice.util.JWTUtil;
+import com.lox.authservice.security.util.JWTUtil;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
