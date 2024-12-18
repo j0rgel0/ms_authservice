@@ -1,6 +1,6 @@
 // src/main/java/com/lox/authservice/models/events/Event.java
 
-package com.lox.authservice.api.kafka.events;
+package com.lox.authservice.common.kafka.event;
 
 import java.time.Instant;
 import java.util.UUID;

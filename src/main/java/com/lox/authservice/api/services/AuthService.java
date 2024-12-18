@@ -2,7 +2,7 @@ package com.lox.authservice.api.services;
 
 import com.lox.authservice.api.exceptions.EmailAlreadyExistsException;
 import com.lox.authservice.api.exceptions.UsernameAlreadyExistsException;
-import com.lox.authservice.api.kafka.events.EventProducer;
+import com.lox.authservice.common.kafka.event.EventProducer;
 import com.lox.authservice.api.kafka.events.AuthEventBuilder;
 import com.lox.authservice.api.models.Credential;
 import com.lox.authservice.api.models.User;
@@ -12,7 +12,7 @@ import com.lox.authservice.api.repositories.UserRepository;
 import com.lox.authservice.api.kafka.events.EventType;
 import com.lox.authservice.api.models.AuthToken;
 import com.lox.authservice.api.kafka.events.AuthEvent;
-import com.lox.authservice.api.kafka.events.Event;
+import com.lox.authservice.common.kafka.event.Event;
 import com.lox.authservice.security.util.JWTUtil;
 import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
