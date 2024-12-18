@@ -2,14 +2,14 @@ package com.lox.authservice.api.services;
 
 import com.lox.authservice.api.exceptions.EmailAlreadyExistsException;
 import com.lox.authservice.api.exceptions.UsernameAlreadyExistsException;
-import com.lox.authservice.api.kafka.EventProducer;
+import com.lox.authservice.api.kafka.events.EventProducer;
 import com.lox.authservice.api.kafka.events.AuthEventBuilder;
 import com.lox.authservice.api.models.Credential;
 import com.lox.authservice.api.models.User;
 import com.lox.authservice.api.repositories.AuthTokenRepository;
 import com.lox.authservice.api.repositories.CredentialRepository;
 import com.lox.authservice.api.repositories.UserRepository;
-import com.lox.authservice.api.kafka.EventType;
+import com.lox.authservice.api.kafka.events.EventType;
 import com.lox.authservice.api.models.AuthToken;
 import com.lox.authservice.api.kafka.events.AuthEvent;
 import com.lox.authservice.api.kafka.events.Event;

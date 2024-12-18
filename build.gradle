@@ -43,7 +43,9 @@ dependencies {
     runtimeOnly 'org.postgresql:postgresql'
 
     // Redis Dependencies
-    implementation 'redis.clients:jedis'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis-reactive'
+    implementation 'io.lettuce:lettuce-core:6.5.1.RELEASE'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
 
     // Messaging Dependencies
     implementation 'org.springframework.kafka:spring-kafka'

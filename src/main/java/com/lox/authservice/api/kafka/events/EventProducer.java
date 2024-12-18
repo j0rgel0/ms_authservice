@@ -1,6 +1,5 @@
-package com.lox.authservice.api.kafka;
+package com.lox.authservice.api.kafka.events;
 
-import com.lox.authservice.api.kafka.events.Event;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

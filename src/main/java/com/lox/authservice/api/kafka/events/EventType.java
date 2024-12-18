@@ -1,5 +1,6 @@
-package com.lox.authservice.api.kafka;
+package com.lox.authservice.api.kafka.events;
 
+import com.lox.authservice.api.kafka.KafkaTopics;
 import lombok.Getter;
 
 @Getter

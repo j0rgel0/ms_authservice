@@ -1,7 +1,6 @@
 // src/main/java/com/lox/authservice/config/KafkaAdminConfig.java
-package com.lox.authservice.common.kafka;
+package com.lox.authservice.api.kafka;
 
-import com.lox.authservice.api.kafka.KafkaTopics;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.kafka.clients.admin.AdminClientConfig;

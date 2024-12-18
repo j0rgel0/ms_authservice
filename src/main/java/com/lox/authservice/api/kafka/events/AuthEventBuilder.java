@@ -1,6 +1,5 @@
 package com.lox.authservice.api.kafka.events;
 
-import com.lox.authservice.api.kafka.EventType;
 import com.lox.authservice.api.models.User;
 
 import java.time.Instant;
