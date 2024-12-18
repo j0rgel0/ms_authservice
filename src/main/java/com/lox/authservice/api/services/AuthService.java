@@ -2,20 +2,17 @@ package com.lox.authservice.api.services;
 
 import com.lox.authservice.api.exceptions.EmailAlreadyExistsException;
 import com.lox.authservice.api.exceptions.UsernameAlreadyExistsException;
-import com.lox.authservice.common.kafka.event.EventProducer;
-import com.lox.authservice.api.kafka.events.AuthEventBuilder;
+import com.lox.authservice.api.kafka.events.AuthEvent;
+import com.lox.authservice.api.kafka.events.EventType;
+import com.lox.authservice.api.models.AuthToken;
 import com.lox.authservice.api.models.Credential;
 import com.lox.authservice.api.models.User;
 import com.lox.authservice.api.repositories.AuthTokenRepository;
 import com.lox.authservice.api.repositories.CredentialRepository;
 import com.lox.authservice.api.repositories.UserRepository;
-import com.lox.authservice.api.kafka.events.EventType;
-import com.lox.authservice.api.models.AuthToken;
-import com.lox.authservice.api.kafka.events.AuthEvent;
-import com.lox.authservice.common.kafka.event.Event;
+import com.lox.authservice.common.kafka.event.EventProducer;
 import com.lox.authservice.security.util.JWTUtil;
 import java.time.Instant;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -41,42 +38,36 @@ public class AuthService {
         log.info("Attempting to register user: {}", user.getUsername());
 
         return userRepository.findByUsername(user.getUsername())
-                .flatMap(existingUser -> {
-                    return Mono.<User>error(
-                            new UsernameAlreadyExistsException("Username already exists"));
-                }) // Check if the username already exists.
+                .flatMap(existingUser -> Mono.<User>error(
+                        new UsernameAlreadyExistsException("The username already exists")))
                 .switchIfEmpty(
                         userRepository.findByEmail(user.getEmail())
-                                .flatMap(existingUser -> {
-                                    return Mono.<User>error(new EmailAlreadyExistsException(
-                                            "Email already exists"));
-                                }) // Check if the email already exists.
+                                .flatMap(existingUser -> Mono.<User>error(
+                                        new EmailAlreadyExistsException(
+                                                "The email already exists")))
                 )
                 .switchIfEmpty(Mono.defer(() -> {
-                    user.setCreatedAt(Instant.now()); // Set creation time.
+                    user.setCreatedAt(Instant.now());
                     log.info("Saving new user: {}", user.getUsername());
-                    return userRepository.save(user).log("save-user"); // Save the new user.
+                    return userRepository.save(user)
+                            .doOnSuccess(savedUser -> log.info("User saved: {}",
+                                    savedUser.getUsername()));
                 }))
                 .flatMap(savedUser -> {
                     Credential credential = Credential.builder()
                             .userId(savedUser.getId())
-                            .password(
-                                    passwordEncoder.encode(rawPassword)) // Encode the raw password.
+                            .password(passwordEncoder.encode(rawPassword))
                             .build();
                     log.info("Saving credentials for user: {}", savedUser.getUsername());
                     return credentialRepository.save(credential)
-                            .thenReturn(savedUser); // Save credentials and return the user.
+                            .thenReturn(savedUser);
                 })
-                .publishOn(
-                        Schedulers.boundedElastic()) // Switch to a bounded elastic scheduler for heavy tasks.
+                .publishOn(Schedulers.boundedElastic())
                 .flatMap(savedUser -> {
-                    log.info("User registered successfully: {}", savedUser.getUsername());
-                    AuthEvent event = AuthEventBuilder.userCreated(
-                            savedUser); // Build a "user created" event.
-                    CompletableFuture<Void> eventFuture = sendEvent(EventType.USER_CREATED,
-                            event).toFuture();
-                    return Mono.fromFuture(eventFuture)
-                            .thenReturn(savedUser); // Send event and return the user.
+                    log.info("User successfully registered: {}", savedUser.getUsername());
+                    AuthEvent event = AuthEvent.userCreated(savedUser);
+                    return sendEvent(EventType.USER_CREATED, event)
+                            .thenReturn(savedUser);
                 })
                 .doOnError(error -> log.error("Error during user registration: {}",
                         error.getMessage())); // Log registration errors.
@@ -106,10 +97,9 @@ public class AuthService {
                                         .expiryTime(expiry)
                                         .build();
 
-                                log.info("Authentication successful for user: {}", email);
+                                log.info("Successful authentication for user: {}", email);
                                 return authTokenRepository.save(authToken)
-                                        .thenReturn(
-                                                user); // Save the auth token and return the user.
+                                        .thenReturn(user); // Save auth token and return user.
                             } else {
                                 log.warn("Authentication failed: Invalid password for user {}",
                                         email);
@@ -118,30 +108,29 @@ public class AuthService {
                             }
                         }))
                 .flatMap(user -> {
-                    AuthEvent event = AuthEventBuilder.userAuthenticated(user, ipAddress, userAgent,
-                            referer); // Build an authentication event.
-                    CompletableFuture<Void> eventFuture = sendEvent(EventType.USER_AUTHENTICATED,
-                            event).toFuture();
-                    return Mono.fromFuture(eventFuture)
-                            .then(Mono.just(jwtUtil.generateToken(String.valueOf(user.getId()),
-                                    "ROLE_USER"))); // Return the JWT.
+                    AuthEvent event = AuthEvent.userAuthenticated(user, ipAddress, userAgent,
+                            referer);
+                    return sendEvent(EventType.USER_AUTHENTICATED, event)
+                            .thenReturn(jwtUtil.generateToken(String.valueOf(user.getId()),
+                                    "ROLE_USER")); // Return JWT.
                 })
                 .doOnSuccess(
                         token -> log.info("Authentication process completed for user: {}", email))
                 .publishOn(
-                        Schedulers.boundedElastic()) // Switch to a bounded elastic scheduler for heavy tasks.
+                        Schedulers.boundedElastic()) // Switch to an elastic scheduler for heavy tasks.
                 .doOnError(error -> {
                     log.error("Authentication error for user {}: {}", email, error.getMessage());
-                    AuthEvent event = AuthEventBuilder.loginFailed(email, ipAddress, userAgent,
-                            referer, error.getMessage()); // Build a login failure event.
+                    AuthEvent event = AuthEvent.loginFailed(email, ipAddress, userAgent, referer,
+                            error.getMessage()); // Build login failure event.
                     sendEvent(EventType.LOGIN_FAILED, event).subscribe(); // Send failure event.
                 });
     }
 
-    private <T extends Event> Mono<Void> sendEvent(EventType eventType, T event) {
-        log.info("Sending event of type {}: {}", eventType, event); // Log event sending.
-        return producer.publishEvent(eventType, event)
-                .doOnSuccess(aVoid -> log.info("Event {} sent successfully", eventType)) // Log success.
-                .doOnError(error -> log.error("Error sending event {}: {}", eventType, error.getMessage())); // Log errors.
+    private <T extends AuthEvent> Mono<Void> sendEvent(EventType eventType, T event) {
+        log.info("Sending event of type {}: {}", eventType, event);
+        return producer.publishEvent(eventType.getTopic(), event)
+                .doOnSuccess(aVoid -> log.info("Event {} sent successfully", eventType))
+                .doOnError(error -> log.error("Error sending event {}: {}", eventType,
+                        error.getMessage()));
     }
 }

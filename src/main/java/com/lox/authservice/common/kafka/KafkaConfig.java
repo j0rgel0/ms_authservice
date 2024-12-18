@@ -1,16 +1,18 @@
 package com.lox.authservice.common.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.clients.admin.AdminClientConfig;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.config.TopicBuilder;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import reactor.kafka.sender.KafkaSender;
 import reactor.kafka.sender.SenderOptions;
@@ -23,13 +25,20 @@ public class KafkaConfig {
     private String bootstrapServers;
 
     @Bean
+    public KafkaAdmin kafkaAdmin() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        return new KafkaAdmin(configs);
+    }
+
+    @Bean
     public SenderOptions<String, Object> senderOptions(ObjectMapper objectMapper) {
         Map<String, Object> props = new HashMap<>();
 
         // Basic Producer Configs
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, org.springframework.kafka.support.serializer.JsonSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
         // Idempotence Configuration
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
@@ -47,5 +56,21 @@ public class KafkaConfig {
     @Bean
     public KafkaSender<String, Object> kafkaSender(SenderOptions<String, Object> senderOptions) {
         return KafkaSender.create(senderOptions);
+    }
+
+    /**
+     * Generic method to create topics dynamically.
+     *
+     * @param name       The name of the topic.
+     * @param partitions Number of partitions.
+     * @param replicas   Number of replicas.
+     * @return NewTopic instance.
+     */
+    public NewTopic createTopic(String name, int partitions, short replicas) {
+        return TopicBuilder.name(name)
+                .partitions(partitions)
+                .replicas(replicas)
+                .config("cleanup.policy", "delete")
+                .build();
     }
 }
