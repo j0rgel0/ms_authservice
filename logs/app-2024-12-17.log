@@ -719,3 +719,252 @@ Action:
 
 Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
 
+2024-12-17 18:50:34 [main] INFO  c.l.a.AuthserviceApplication - Starting AuthserviceApplication using Java 21.0.4 with PID 27024 (C:\Edureka\repositories\LOX_GRADLE\authservice\build\classes\java\main started by jorge in C:\Edureka\repositories\LOX_GRADLE\authservice)
+2024-12-17 18:50:34 [main] INFO  c.l.a.AuthserviceApplication - The following 1 profile is active: "local"
+2024-12-17 18:50:34 [main] INFO  o.s.c.c.c.ConfigServerConfigDataLoader - Fetching config from server at : http://localhost:8888
+2024-12-17 18:50:34 [main] INFO  o.s.c.c.c.ConfigServerConfigDataLoader - Located environment: name=lox-auth-service, profiles=[default], label=null, version=587591b77ae1c0a2d71a9799f424959375d1123c, state=
+2024-12-17 18:50:34 [main] INFO  o.s.c.c.c.ConfigServerConfigDataLoader - Fetching config from server at : http://localhost:8888
+2024-12-17 18:50:34 [main] INFO  o.s.c.c.c.ConfigServerConfigDataLoader - Located environment: name=lox-auth-service, profiles=[local], label=null, version=587591b77ae1c0a2d71a9799f424959375d1123c, state=
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data R2DBC repositories in DEFAULT mode.
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 133 ms. Found 3 R2DBC repository interfaces.
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Multiple Spring Data modules found, entering strict repository configuration mode
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.lox.authservice.api.repositories.AuthTokenRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.lox.authservice.api.repositories.CredentialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationExtensionSupport - Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.lox.authservice.api.repositories.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2024-12-17 18:50:35 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 10 ms. Found 0 Redis repository interfaces.
+2024-12-17 18:50:35 [main] INFO  o.s.cloud.context.scope.GenericScope - BeanFactory id=3bbb73ad-409e-34f9-8593-fea5dfd1fc38
+2024-12-17 18:50:37 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver - Exposing 5 endpoints beneath base path '/actuator'
+2024-12-17 18:50:38 [main] INFO  org.flywaydb.core.FlywayExecutor - Database: jdbc:postgresql://localhost:5432/authdb (PostgreSQL 17.2)
+2024-12-17 18:50:38 [main] INFO  o.f.core.internal.command.DbValidate - Successfully validated 1 migration (execution time 00:00.033s)
+2024-12-17 18:50:38 [main] INFO  o.f.core.internal.command.DbMigrate - Current version of schema "public": 1
+2024-12-17 18:50:38 [main] WARN  o.f.core.internal.command.DbMigrate - outOfOrder mode is active. Migration of schema "public" may not be reproducible.
+2024-12-17 18:50:38 [main] INFO  o.f.core.internal.command.DbMigrate - Schema "public" is up to date. No migration necessary.
+2024-12-17 18:50:38 [main] INFO  o.s.c.n.e.c.DiscoveryClientOptionalArgsConfiguration - Eureka HTTP Client uses RestTemplate.
+2024-12-17 18:50:38 [main] WARN  o.s.c.l.c.LoadBalancerCacheAutoConfiguration$LoadBalancerCaffeineWarnLogger - Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2024-12-17 18:50:38 [main] INFO  o.a.k.c.admin.AdminClientConfig - AdminClientConfig values: 
+	auto.include.jmx.reporter = true
+	bootstrap.controllers = []
+	bootstrap.servers = [localhost:29092]
+	client.dns.lookup = use_all_dns_ips
+	client.id = lox-auth-service-admin-0
+	connections.max.idle.ms = 300000
+	default.api.timeout.ms = 60000
+	enable.metrics.push = true
+	metadata.max.age.ms = 300000
+	metadata.recovery.strategy = none
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 2147483647
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+
+2024-12-17 18:50:38 [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version: 3.8.1
+2024-12-17 18:50:38 [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId: 70d6ff42debf7e17
+2024-12-17 18:50:38 [main] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1734483038733
+2024-12-17 18:50:39 [kafka-admin-client-thread | lox-auth-service-admin-0] WARN  o.a.k.clients.admin.KafkaAdminClient - [AdminClient clientId=lox-auth-service-admin-0] The DescribeTopicPartitions API is not supported, using Metadata API to describe topics.
+2024-12-17 18:50:39 [kafka-admin-client-thread | lox-auth-service-admin-0] INFO  o.a.kafka.common.utils.AppInfoParser - App info kafka.admin.client for lox-auth-service-admin-0 unregistered
+2024-12-17 18:50:39 [kafka-admin-client-thread | lox-auth-service-admin-0] INFO  o.a.kafka.common.metrics.Metrics - Metrics scheduler closed
+2024-12-17 18:50:39 [kafka-admin-client-thread | lox-auth-service-admin-0] INFO  o.a.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2024-12-17 18:50:39 [kafka-admin-client-thread | lox-auth-service-admin-0] INFO  o.a.kafka.common.metrics.Metrics - Metrics reporters closed
+2024-12-17 18:50:39 [main] INFO  o.s.b.w.e.netty.NettyWebServer - Netty started on port 55763 (http)
+2024-12-17 18:50:39 [main] INFO  o.s.c.n.e.s.EurekaAutoServiceRegistration - Updating port to 55763
+2024-12-17 18:50:39 [main] INFO  o.s.c.n.eureka.InstanceInfoFactory - Setting initial instance status as: STARTING
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Initializing Eureka in region us-east-1
+2024-12-17 18:50:39 [main] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Disable delta property : false
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Single vip registry refresh property : null
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Force full registry fetch : false
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Application is null : false
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Registered Applications size is zero : true
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Application version is -1: true
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Getting all instance registry info from the eureka server
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - The response status is 200
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Starting heartbeat executor: renew interval is: 30
+2024-12-17 18:50:39 [main] INFO  c.n.discovery.InstanceInfoReplicator - InstanceInfoReplicator onDemand update allowed rate per min is 4
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Discovery Client initialized at timestamp 1734483039446 with initial instances count: 4
+2024-12-17 18:50:39 [main] INFO  o.s.c.n.e.s.EurekaServiceRegistry - Registering application LOX-AUTH-SERVICE with eureka with status UP
+2024-12-17 18:50:39 [main] INFO  c.netflix.discovery.DiscoveryClient - Saw local status change event StatusChangeEvent [timestamp=1734483039450, current=UP, previous=STARTING]
+2024-12-17 18:50:39 [main] WARN  c.n.discovery.InstanceInfoReplicator - Ignoring onDemand update due to rate limiter
+2024-12-17 18:50:39 [main] INFO  c.l.a.AuthserviceApplication - Started AuthserviceApplication in 7.013 seconds (process running for 7.775)
+2024-12-17 18:50:40 [DiscoveryClient-InstanceInfoReplicator-%d] INFO  c.netflix.discovery.DiscoveryClient - DiscoveryClient_LOX-AUTH-SERVICE/lox-auth-service:14339a300ca78a50dbc72793a3e39ef3: registering service...
+2024-12-17 18:50:40 [DiscoveryClient-InstanceInfoReplicator-%d] INFO  c.netflix.discovery.DiscoveryClient - DiscoveryClient_LOX-AUTH-SERVICE/lox-auth-service:14339a300ca78a50dbc72793a3e39ef3 - registration status: 204
+2024-12-17 18:50:50 [parallel-2] INFO  c.l.a.common.filters.LoggingFilter - Incoming request: POST http://localhost:55763/api/v1/auth/register
+2024-12-17 18:50:50 [reactor-tcp-nio-5] INFO  c.l.a.api.services.AuthService - Attempting to register user: jorgfeh90e
+2024-12-17 18:50:50 [boundedElastic-2] ERROR c.l.a.api.services.AuthService - Error during user registration: The username already exists
+2024-12-17 18:50:50 [reactor-tcp-nio-5] INFO  c.l.a.common.filters.LoggingFilter - Response: 400 BAD_REQUEST
+2024-12-17 18:50:55 [parallel-4] INFO  c.l.a.common.filters.LoggingFilter - Incoming request: POST http://localhost:55763/api/v1/auth/register
+2024-12-17 18:50:55 [reactor-tcp-nio-5] INFO  c.l.a.api.services.AuthService - Attempting to register user: jorgfeh908e
+2024-12-17 18:50:55 [reactor-tcp-nio-5] INFO  c.l.a.api.services.AuthService - Saving new user: jorgfeh908e
+2024-12-17 18:50:55 [reactor-tcp-nio-5] INFO  c.l.a.api.services.AuthService - User saved: jorgfeh908e
+2024-12-17 18:50:55 [reactor-tcp-nio-5] INFO  c.l.a.api.services.AuthService - Saving credentials for user: jorgfeh908e
+2024-12-17 18:50:55 [boundedElastic-2] INFO  c.l.a.api.services.AuthService - User successfully registered: jorgfeh908e
+2024-12-17 18:50:55 [boundedElastic-2] INFO  c.l.a.api.services.AuthService - Sending event of type USER_CREATED: AuthEvent(eventType=USER_CREATED, userId=bf73f61d-d179-4be4-bf21-acdf68d9a1f4, username=jorgfeh908e, email=jorg6ffe3890h@example.com, fullName=Jorge, timestamp=2024-12-18T00:50:55.761869Z, ipAddress=null, userAgent=null, referer=null, failureReason=null)
+2024-12-17 18:50:55 [boundedElastic-2] INFO  o.a.k.c.producer.ProducerConfig - ProducerConfig values: 
+	acks = -1
+	auto.include.jmx.reporter = true
+	batch.size = 16384
+	bootstrap.servers = [localhost:29092]
+	buffer.memory = 33554432
+	client.dns.lookup = use_all_dns_ips
+	client.id = producer-1
+	compression.gzip.level = -1
+	compression.lz4.level = 9
+	compression.type = none
+	compression.zstd.level = 3
+	connections.max.idle.ms = 540000
+	delivery.timeout.ms = 120000
+	enable.idempotence = true
+	enable.metrics.push = true
+	interceptor.classes = []
+	key.serializer = class org.apache.kafka.common.serialization.StringSerializer
+	linger.ms = 5
+	max.block.ms = 60000
+	max.in.flight.requests.per.connection = 1
+	max.request.size = 1048576
+	metadata.max.age.ms = 300000
+	metadata.max.idle.ms = 300000
+	metadata.recovery.strategy = none
+	metric.reporters = []
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partitioner.adaptive.partitioning.enable = true
+	partitioner.availability.timeout.ms = 0
+	partitioner.class = null
+	partitioner.ignore.keys = false
+	receive.buffer.bytes = 32768
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retries = 2147483647
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = null
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	transaction.timeout.ms = 60000
+	transactional.id = null
+	value.serializer = class org.springframework.kafka.support.serializer.JsonSerializer
+
+2024-12-17 18:50:55 [boundedElastic-2] INFO  o.a.k.c.t.i.KafkaMetricsCollector - initializing Kafka metrics collector
+2024-12-17 18:50:55 [boundedElastic-2] INFO  o.a.k.clients.producer.KafkaProducer - [Producer clientId=producer-1] Instantiated an idempotent producer.
+2024-12-17 18:50:55 [boundedElastic-2] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka version: 3.8.1
+2024-12-17 18:50:55 [boundedElastic-2] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka commitId: 70d6ff42debf7e17
+2024-12-17 18:50:55 [boundedElastic-2] INFO  o.a.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1734483055850
+2024-12-17 18:50:55 [kafka-producer-network-thread | producer-1] INFO  org.apache.kafka.clients.Metadata - [Producer clientId=producer-1] Cluster ID: msz7zaIZTM-jj6F_9XA9Eg
+2024-12-17 18:50:55 [kafka-producer-network-thread | producer-1] INFO  o.a.k.c.p.i.TransactionManager - [Producer clientId=producer-1] ProducerId set to 12 with epoch 0
+2024-12-17 18:50:55 [kafka-producer-network-thread | producer-1] INFO  c.l.a.c.kafka.event.EventProducer - Successfully published event to user-events: AuthEvent(eventType=USER_CREATED, userId=bf73f61d-d179-4be4-bf21-acdf68d9a1f4, username=jorgfeh908e, email=jorg6ffe3890h@example.com, fullName=Jorge, timestamp=2024-12-18T00:50:55.761869Z, ipAddress=null, userAgent=null, referer=null, failureReason=null) with offset [2]
+2024-12-17 18:50:55 [kafka-producer-network-thread | producer-1] INFO  c.l.a.api.services.AuthService - Event USER_CREATED sent successfully
+2024-12-17 18:50:55 [reactor-tcp-nio-5] INFO  c.l.a.common.filters.LoggingFilter - Response: 200 OK
+2024-12-17 18:55:39 [AsyncResolver-bootstrap-executor-%d] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
+2024-12-17 18:59:55 [kafka-producer-network-thread | producer-1] INFO  o.apache.kafka.clients.NetworkClient - [Producer clientId=producer-1] Node -1 disconnected.
+2024-12-17 19:00:39 [AsyncResolver-bootstrap-executor-%d] INFO  c.n.d.s.r.aws.ConfigClusterResolver - Resolving eureka endpoints via configuration
