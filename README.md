@@ -133,7 +133,33 @@ Dependencies are grouped in the `build.gradle` file. Notable ones include:
 - Java JWT
 - Project Reactor Kafka
 - Micrometer for observability
+- 
+## Kafka - Events Flow
+![Untitled diagram-2024-12-19-194632](https://github.com/user-attachments/assets/4aabe01f-3727-458d-b554-71082c374a20)
 
+```
+graph TD
+    %% Main Components
+    AuthService[AuthService]
+    KafkaProducer[Kafka Producer]
+    UserEventsTopic["<b>user-events Topic</b><br>Partitions: 1"]
+    AuthEventsTopic["<b>auth-events Topic</b><br>Partitions: 1"]
+
+    %% User Registration Event
+    AuthService -->|"userCreatedEvent<br><b>Key</b>: userId<br><b>Partition:</b> userId mod 3"| KafkaProducer
+    KafkaProducer -->|"Publishes to"| UserEventsTopic
+    UserEventsTopic -->|"Acknowledged"| KafkaProducer
+
+    %% Successful Authentication Event
+    AuthService -->|"userAuthenticatedEvent<br><b>Key:</b> userId<br><b>Partition:</b> 0"| KafkaProducer
+    KafkaProducer -->|"Publishes to"| AuthEventsTopic
+    AuthEventsTopic -->|"Acknowledged"| KafkaProducer
+
+    %% Failed Login Event
+    AuthService -->|"loginFailedEvent<br><b>Key:</b> email<br><b>Partition:</b> 0"| KafkaProducer
+    KafkaProducer -->|"Publishes to"| AuthEventsTopic
+    AuthEventsTopic -->|"Acknowledged"| KafkaProducer
+```
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
