@@ -160,6 +160,13 @@ graph TD
     KafkaProducer -->|"Publishes to"| AuthEventsTopic
     AuthEventsTopic -->|"Acknowledged"| KafkaProducer
 ```
+
+## Testing Messaging:
+### Topic Messages: auth-events
+![image](https://github.com/user-attachments/assets/29e49642-55d9-4484-b5b0-94b977113dee)
+### Topic Messages: user-events
+![image](https://github.com/user-attachments/assets/3843af38-4b86-434e-bcd7-fe705a577b77)
+
 ## License
 
 This project is licensed under the MIT License. See the `LICENSE` file for details.
