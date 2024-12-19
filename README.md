@@ -133,7 +133,29 @@ Dependencies are grouped in the `build.gradle` file. Notable ones include:
 - Java JWT
 - Project Reactor Kafka
 - Micrometer for observability
-- 
+
+## Postman
+### Register
+```
+curl --location 'http://localhost:7070/api/v1/auth/register' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "username": "jorge2",
+    "email": "jorge2@example.com",
+    "fullName": "Jorge",
+    "password": "jorge"
+}'
+```
+### Login
+```
+curl --location 'http://localhost:7070/api/v1/auth/login' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "email": "jorge2@example.com",
+    "password": "jorge"
+}'
+```
+
 ## Kafka - Events Flow
 ![Untitled diagram-2024-12-19-194632](https://github.com/user-attachments/assets/4aabe01f-3727-458d-b554-71082c374a20)
 
